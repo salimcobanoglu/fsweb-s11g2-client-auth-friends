@@ -1,0 +1,32 @@
+.App {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.5rem 1rem;
+  flex-wrap: wrap;
+}
+
+h1 {
+  font-weight: bold;
+  font-size: 2rem;
+  align-self: center;
+}
+
+.navBox {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  gap: 1rem;
+  margin: 0.5rem;
+}
+
+.navLink {
+  background-color: black;
+  color: antiquewhite;
+  padding: 1rem 1rem;
+}
