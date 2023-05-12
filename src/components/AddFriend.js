@@ -1,68 +1,69 @@
-import { useContext, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
-export default function AddFriend(props) {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({ mode: "onChange" });
+import React, { useState } from "react";
+import { axiosWithAuth } from "./AxiosAuth";
+import { useHistory } from "react-router-dom";
+export default function AddFriend() {
+  const [friendData, setFriendData] = useState({
+    name: "",
+    email: "",
+  });
 
-  const navigate = useNavigate();
+  function handleChange(event) {
+    setFriendData({
+      ...friendData,
+      [event.target.name]: event.target.value,
+    });
+  }
+  const history = useHistory();
 
-  const { isLoggedIn, loggedInToken } = useContext(AuthContext);
+  //burda da eklemek istediğimiz kişi bilgilerini friendData statei ile tutarız.Form submit edilince data api/friendse ulaşır.
 
-  useEffect(() => {
-    const token = window.localStorage.getItem(props.localStorageKey);
-    if (!token) {
-      navigate("/login");
-    }
-  }, []);
+  function handleSubmit(event) {
+    event.preventDefault();
+    axiosWithAuth()
+      .post(`/api/friends`, friendData)
+      .then((response) => {
+        console.log("friendData ulaştı", response.data);
 
-  const onSubmitLogin = (data) => {
-    const config = {
-      method: "post",
-      url: "http://localhost:9001/api/friends",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: loggedInToken,
-      },
-      data: JSON.stringify(data),
-    };
-    axios(config)
-      .then(function (response) {
-        navigate("/friends-list");
-        console.log(response.data);
+        history.push("/friends");
       })
-      .catch(function (error) {
-        console.log(error);
-      });
-  };
+      .catch((err) => console.log("Error!", err));
+  }
 
   return (
-    <div className="loginFormMainDiv">
-      <h1>Add Friend</h1>
-      <form onSubmit={handleSubmit(onSubmitLogin)}>
-        <div>
-          <input
-            type="text"
-            placeholder="name"
-            {...register("name", { required: "Ama adın ne?" })}
-          />
-        </div>
-        <div>
-          <input
-            type="email"
-            placeholder="email"
-            {...register("email", {
-              required: "Epostanı ver  ki spamlayalım.",
-            })}
-          />
-        </div>
-        <button type="submit">Add Friend</button>
-      </form>
+    <div>
+      <div className="form-container">
+        <h1 className="text-center">ADD FRIEND</h1>
+        <form onSubmit={handleSubmit} className="flex flex-col justify-center">
+          <label className="text-center m-9 ">
+            {" "}
+            FRIEND NAME
+            <input
+              className="bg-black text-white p-8 mb-7 ml-7 max-w-xl text-center"
+              type="text"
+              name="name"
+              value={friendData.name}
+              onChange={handleChange}
+            />
+          </label>
+          <label className="text-center m-9 ">
+            {" "}
+            FRIEND EMAIL
+            <input
+              className="bg-black text-white p-8 mb-7 ml-7 max-w-xl text-center"
+              type="email"
+              name="email"
+              value={friendData.email}
+              onChange={handleChange}
+            />
+          </label>
+          <button
+            className="bg-black text-white text-center m-9 max-w-xxl p-8"
+            type="submit"
+          >
+            SUBMIT
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

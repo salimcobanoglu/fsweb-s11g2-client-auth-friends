@@ -1,65 +1,40 @@
-import { useEffect, useState } from "react";
 import "./App.css";
-import { Route, Routes } from "react-router-dom";
-import LoginForm from "./components/LoginForm";
-import { AuthContext } from "./context/AuthContext";
-import FriendsList from "./components/FriendsList";
-import Friend from "./components/Friend";
 import AddFriend from "./components/AddFriend";
-import Header from "./components/Header";
-const localStorageKey = "S11G20223";
+import FriendList from "./components/FriendList";
+import Login from "./components/Login";
+import { Route, Link, Switch } from "react-router-dom";
+import PrivateRoute from "./components/PrivateRoute";
+import Logout from "./components/Logout";
 
 function App() {
-  const [isLoggedIn, setisLoggedIn] = useState(false);
-  const [loggedInToken, setloggedInToken] = useState(null);
-
-  useEffect(() => {
-    const token = window.localStorage.getItem(localStorageKey);
-
-    if (token) {
-      setisLoggedIn(true);
-      setloggedInToken(token);
-    }
-  }, [isLoggedIn]);
-
   return (
-    <AuthContext.Provider
-      value={{
-        setisLoggedIn,
-        isLoggedIn,
-        setloggedInToken,
-        localStorageKey,
-        loggedInToken,
-      }}
-    >
-      <div className="App">
-        <Header />
-        <Routes>
-          <Route exact path="/" element={<LoginForm />} />
-          <Route path="/login" element={<LoginForm />} />
-
-          {/* <Route
-          render={() =>
-            isLoggedIn ? <FriendsList /> : <Redirect to="/login" />
-          }
-          exact
-          path="/friends-list"
-          />
-          
-          <Route path="/friends/add" element={<AddFriend />} />
-        */}
-          <Route
-            path="/friends/:id"
-            element={<Friend localStorageKey={localStorageKey} />}
-          />
-          <Route path="/friends-list" element={<FriendsList />} />
-          <Route
-            path="/friends/add"
-            element={<AddFriend localStorageKey={localStorageKey} />}
-          />
-        </Routes>
+    <div className="flex flex-col justify-center">
+      <div className="flex flex-row justify-center">
+        <div className="flex justify-center p-6 m-4  border-b-4 border-black">
+          <h1 className="text-black p-8 m-4 text-center  ">FRIENDS DATABASE</h1>
+          <Link to="/login">
+            <button className="bg-black text-white p-10 m-4">LOGIN.</button>
+          </Link>
+          <Link to="/friends">
+            <button className="bg-black text-white p-10 m-4">
+              FRIENDLIST.
+            </button>
+          </Link>
+          <Link to="/friends/add">
+            <button className="bg-black text-white p-10 m-4">ADDFRIEND.</button>
+          </Link>
+          <Link to="/logout">
+            <button className="bg-black text-white p-10 m-4">LOGOUT</button>
+          </Link>
+        </div>
       </div>
-    </AuthContext.Provider>
+      <Switch>
+        <Route exact path="/login" component={Login} />
+        <PrivateRoute exact path="/friends" component={FriendList} />
+        <PrivateRoute exact path="/friends/add" component={AddFriend} />
+        <PrivateRoute exact path="/logout" component={Logout} />
+      </Switch>
+    </div>
   );
 }
 
